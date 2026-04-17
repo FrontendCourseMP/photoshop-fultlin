@@ -1,0 +1,201 @@
+@bg-app: #1e1e1e;
+@bg-workspace: #2d2d2d;
+@bg-panel: #252526;
+@bg-input: #3c3c3c;
+@border: #454545;
+@text-primary: #d4d4d4;
+@text-secondary: #888;
+@accent: #007acc;
+@radius: 3px;
+@font-mono: 'Consolas', 'Courier New', monospace;
+@font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+@space-xs: 4px;
+@space-sm: 6px;
+@space-md: 10px;
+@sidebar-width: 260px;
+@top-bar-height: 40px;
+@status-height: 22px;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: @bg-app;
+  color: @text-primary;
+  font-family: @font-ui;
+  font-size: 12px;
+  line-height: 1.3;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  user-select: none;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: @top-bar-height;
+  padding: 0 @space-md;
+  background: @bg-panel;
+  border-bottom: 1px solid @border;
+  flex-shrink: 0;
+}
+
+.file-info {
+  font-family: @font-mono;
+  font-size: 11px;
+  color: @text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: @space-sm;
+  align-items: center;
+  position: relative;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: @radius;
+  color: @text-primary;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+
+  &:hover {
+    background: @bg-input;
+    border-color: @border;
+    color: white;
+  }
+  &:active { transform: translateY(1px); }
+  
+  svg { width: 16px; height: 16px; fill: currentColor; }
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: @space-xs;
+  background: @bg-panel;
+  border: 1px solid @border;
+  border-radius: @radius;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  z-index: 100;
+  min-width: 130px;
+  overflow: hidden;
+  animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+  padding: @space-sm @space-md;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: @space-sm;
+  
+  &:hover { background: @bg-input; color: white; }
+  
+  .format-badge {
+    font-size: 10px;
+    padding: 1px 4px;
+    background: @bg-app;
+    border-radius: 2px;
+    color: @text-secondary;
+    margin-left: auto;
+  }
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  width: 100%;
+}
+
+.sidebar {
+  width: @sidebar-width;
+  background: @bg-panel;
+  border-right: 1px solid @border;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.canvas-area {
+  flex: 1;
+  background: @bg-workspace;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(@border 1px, transparent 1px),
+      linear-gradient(90deg, @border 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+}
+
+canvas {
+  display: block;
+  background: #000;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  image-rendering: pixelated;
+  cursor: crosshair;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  padding: 0 @space-md;
+  background: #1a1a1a;
+  border-top: 1px solid @border;
+  height: @status-height;
+  color: @text-secondary;
+  font-family: @font-mono;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: @bg-app; }
+::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 5px; border: 2px solid @bg-app; }
+::-webkit-scrollbar-thumb:hover { background: #5a5a5a; }
