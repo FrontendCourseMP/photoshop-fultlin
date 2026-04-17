@@ -25,6 +25,33 @@ export function useImageProcessor() {
 
     try {
       const ext = file.name.split('.').pop()?.toLowerCase();
+      let originalColorDepth = '—';
+      
+      if (ext === 'jpg' || ext === 'jpeg') {
+        originalColorDepth = 'RGB 24-bit';
+        
+      } else if (ext === 'png') {
+        const header = await file.slice(0, 32).arrayBuffer();
+        const bytes = new Uint8Array(header);
+        
+        const colorType = bytes[25];
+        const bitDepth = bytes[24];
+        
+        // Color Type: 0=Gray, 2=RGB, 3=Indexed, 4=Gray+Alpha, 6=RGBA
+        if (colorType === 0) originalColorDepth = `Grayscale ${bitDepth}-bit`;
+        else if (colorType === 2) originalColorDepth = `RGB ${bitDepth * 3}-bit`;
+        else if (colorType === 3) originalColorDepth = `Indexed ${bitDepth}-bit`;
+        else if (colorType === 4) originalColorDepth = `Grayscale ${bitDepth}-bit + Alpha`;
+        else if (colorType === 6) originalColorDepth = `RGBA ${bitDepth * 4}-bit`;
+        else originalColorDepth = `${bitDepth}-bit (type ${colorType})`;
+        
+      } else if (ext === 'gb7') {
+        // Читаем флаг маски из заголовка GB7 (смещение 5)
+        const header = await file.slice(0, 6).arrayBuffer();
+        const flags = new Uint8Array(header)[5];
+        const hasMask = (flags & 0x01) === 1;
+        originalColorDepth = `Grayscale 7-bit${hasMask ? ' + mask' : ''}`;
+      }
       
       if (ext === 'gb7') {
         const arrayBuffer = await file.arrayBuffer();
@@ -40,16 +67,15 @@ export function useImageProcessor() {
         setMeta({
           width: imageData.width,
           height: imageData.height,
-          colorDepth: 'Grayscale 7-bit' + 
-            (imageData.data.some((v, i) => (i + 1) % 4 === 0 && v === 0) ? ' + mask' : ''),
+          colorDepth: originalColorDepth,
           format: 'gb7',
           fileName: file.name
         });
-        
         setStatus('GB7 изображение загружено');
       } else {
         const img = new Image();
         const url = URL.createObjectURL(file);
+        
         await new Promise((res, rej) => { 
           img.onload = res; 
           img.onerror = () => rej(new Error('Ошибка загрузки')); 
@@ -61,12 +87,10 @@ export function useImageProcessor() {
         ctx.drawImage(img, 0, 0);
         URL.revokeObjectURL(url);
 
-        const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const bpp = data.data.length / (canvas.width * canvas.height);
         setMeta({
-          width: canvas.width,
-          height: canvas.height,
-          colorDepth: bpp === 4 ? 'RGBA 32-bit' : 'RGB 24-bit',
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          colorDepth: originalColorDepth,  
           format: ext === 'jpg' || ext === 'jpeg' ? 'jpg' : 'png',
           fileName: file.name
         });
