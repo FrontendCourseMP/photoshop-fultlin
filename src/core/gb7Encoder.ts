@@ -95,7 +95,7 @@ export function encodeImageDataToGB7(
 /**
  * Создаёт Blob из GB7 ArrayBuffer для скачивания
  */
-export function createGB7Blob(buffer: ArrayBuffer, fileName: string = 'image.gb7'): Blob {
+export function createGB7Blob(buffer: ArrayBuffer): Blob {
   return new Blob([buffer], { type: 'application/octet-stream' });
 }
 
@@ -103,7 +103,7 @@ export function createGB7Blob(buffer: ArrayBuffer, fileName: string = 'image.gb7
  * Вспомогательная функция для скачивания файла
  */
 export function downloadGB7(buffer: ArrayBuffer, fileName: string = 'image.gb7'): void {
-  const blob = createGB7Blob(buffer, fileName);
+  const blob = createGB7Blob(buffer);
   const url = URL.createObjectURL(blob);
   
   const link = document.createElement('a');
