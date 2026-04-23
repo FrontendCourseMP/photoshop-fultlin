@@ -1,5 +1,3 @@
-// src/core/gb7Decoder.ts
-
 import type { GB7Image, GB7Header, ImageDataRGBA } from "./types";
 
 // Сигнатура GB7: "GB7" + разделитель групп (0x1D)

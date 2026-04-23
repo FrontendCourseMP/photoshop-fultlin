@@ -1,4 +1,3 @@
-// src/hooks/useCanvasNavigation.ts
 import { useRef, useState, useCallback, useEffect } from 'react';
 import type { NavigationState } from '../core';
 
