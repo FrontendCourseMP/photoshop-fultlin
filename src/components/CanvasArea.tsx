@@ -55,7 +55,6 @@ export const CanvasArea = forwardRef<HTMLCanvasElement, CanvasAreaProps>(
             height={height}
             style={{
               display: 'block',
-              background: '#000',
               boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
               imageRendering: 'pixelated',
               userSelect: 'none',

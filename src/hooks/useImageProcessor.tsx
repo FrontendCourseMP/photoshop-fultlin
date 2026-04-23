@@ -80,7 +80,7 @@ export function useImageProcessor() {
     }
   }, []);
 
-  const handleDownload = useCallback((fmt: 'png' | 'jpg' | 'gb7') => {
+ const handleDownload = useCallback((fmt: 'png' | 'jpg' | 'gb7') => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -89,23 +89,30 @@ export function useImageProcessor() {
     setStatus(`Сохранение в ${fmt.toUpperCase()}...`);
 
     try {
+      const cleanName = meta.fileName.replace(/\.(png|jpe?g|gb7)$/i, '');
+
       if (fmt === 'gb7') {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const gb7Buffer = encodeImageDataToGB7(imageData, { useMask: true, threshold: 128 });
-        const outputName = meta.fileName.replace(/\.(png|jpg|jpeg)$/i, '') + '.gb7';
+        
+        const outputName = `${cleanName}.gb7`;
         downloadGB7(gb7Buffer, outputName);
         setStatus(`GB7 файл сохранён: ${outputName}`);
+        
       } else if (fmt === 'jpg') {
         const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
         const link = document.createElement('a');
-        link.download = meta.fileName.replace(/\.(png|gb7)$/i, '') + '.jpg';
+        
+        link.download = `${cleanName}.jpg`;
         link.href = dataUrl;
         link.click();
         setStatus('JPG файл сохранён');
+        
       } else {
         const dataUrl = canvas.toDataURL('image/png');
         const link = document.createElement('a');
-        link.download = meta.fileName.replace(/\.(jpg|gb7)$/i, '') + '.png';
+        
+        link.download = `${cleanName}.png`;
         link.href = dataUrl;
         link.click();
         setStatus('PNG файл сохранён');
@@ -113,7 +120,7 @@ export function useImageProcessor() {
     } catch (err) {
       setStatus(`Ошибка сохранения: ${err instanceof Error ? err.message : 'Неизвестно'}`);
     }
-  }, [meta.fileName]);
+  }, [meta.fileName]); 
 
   return {
     canvasRef,
