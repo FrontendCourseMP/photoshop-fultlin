@@ -1,16 +1,16 @@
-import { type ForwardedRef, forwardRef, useEffect } from 'react';
+import { type ForwardedRef, forwardRef, useCallback, useEffect } from 'react';
 import { useCanvasNavigation } from '../hooks/useCanvasNavigation';
 import type { CanvasAreaProps } from '../core';
 
 export const CanvasArea = forwardRef<HTMLCanvasElement, CanvasAreaProps>(
-  ({ width = 0, height = 0, onScaleChange }, ref: ForwardedRef<HTMLCanvasElement>) => {
+  ({ width = 0, height = 0, onScaleChange, eyedropperActive, onEyedropperPick }, ref: ForwardedRef<HTMLCanvasElement>) => {
     const {
       containerRef,
       transform,
       scale,
       isDragging,
       setImageSize,
-      onMouseDown,
+      onMouseDown: navOnMouseDown,
       onMouseMove,
       onMouseUp,
       onMouseLeave
@@ -28,16 +28,31 @@ export const CanvasArea = forwardRef<HTMLCanvasElement, CanvasAreaProps>(
       }
     }, [scale, onScaleChange]);
 
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+      if (eyedropperActive && e.button === 0 && !e.ctrlKey && !e.metaKey) {
+        const canvas = (ref as React.RefObject<HTMLCanvasElement | null>).current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const px = Math.floor((e.clientX - rect.left) * canvas.width / rect.width);
+        const py = Math.floor((e.clientY - rect.top) * canvas.height / rect.height);
+        if (px >= 0 && px < canvas.width && py >= 0 && py < canvas.height) {
+          onEyedropperPick?.(e, px, py);
+        }
+      } else {
+        navOnMouseDown(e);
+      }
+    }, [eyedropperActive, onEyedropperPick, navOnMouseDown, ref]);
+
     return (
-      <main 
-        className="canvas-area"
+      <main
+        className={`canvas-area${eyedropperActive ? ' eyedropper-active' : ''}`}
         ref={containerRef}
-        onMouseDown={onMouseDown}
+        onMouseDown={handleMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseLeave}
-        style={{ 
-          cursor: isDragging ? 'grabbing' : scale !== 1 ? 'grab' : 'default',
+        style={{
+          cursor: eyedropperActive ? 'crosshair' : isDragging ? 'grabbing' : scale !== 1 ? 'grab' : 'default',
           overflow: 'hidden'
         }}
       >
@@ -49,7 +64,7 @@ export const CanvasArea = forwardRef<HTMLCanvasElement, CanvasAreaProps>(
             willChange: 'transform'
           }}
         >
-          <canvas 
+          <canvas
             ref={ref}
             width={width}
             height={height}

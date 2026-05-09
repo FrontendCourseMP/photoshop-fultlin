@@ -27,6 +27,7 @@ export interface ImageMeta {
   colorDepth: string;
   format: 'png' | 'jpg' | 'gb7' | null;
   fileName: string;
+  channels: number;
 }
 
 export interface NavigationState {
@@ -46,6 +47,25 @@ export interface CanvasAreaProps {
   width?: number;
   height?: number;
   onScaleChange?: (scale: number) => void;
+  eyedropperActive?: boolean;
+  onEyedropperPick?: (e: React.MouseEvent, pixelX: number, pixelY: number) => void;
+}
+
+export interface EyedropperInfo {
+  x: number;
+  y: number;
+  r: number;
+  g: number;
+  b: number;
+  L: number;
+  a: number;
+  labB: number;
+}
+
+export interface EyedropperProps {
+  info: EyedropperInfo | null;
+  position: { x: number; y: number };
+  onClose: () => void;
 }
 
 export interface DownloadMenuProps {
