@@ -104,7 +104,6 @@ export function ChannelPanel({ originalData, channels, channelStates, onToggleCh
   if (!originalData || channels === 0) {
     return (
       <div className="channel-panel">
-        <div className="panel-header">Каналы</div>
         <div className="channel-empty">Нет изображения</div>
       </div>
     );
@@ -114,7 +113,6 @@ export function ChannelPanel({ originalData, channels, channelStates, onToggleCh
 
   return (
     <div className="channel-panel">
-      <div className="panel-header">Каналы</div>
       {labels.map((label, i) => (
         <div
           key={i}

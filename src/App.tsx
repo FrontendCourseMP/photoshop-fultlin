@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useImageProcessor } from './hooks/useImageProcessor';
 import { TopBar } from './components/TopBar';
+import { ToolPanel } from './components/ToolPanel';
 import { Sidebar } from './components/Sidebar';
 import { CanvasArea } from './components/CanvasArea';
 import { StatusBar } from './components/StatusBar';
@@ -11,11 +12,11 @@ import './styles/global.less';
 
 function App() {
   const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
-  const { 
-    canvasRef, 
-    meta, 
-    status, 
-    handleFileChange, 
+  const {
+    canvasRef,
+    meta,
+    status,
+    handleFileChange,
     handleDownload,
     originalData,
     channelStates,
@@ -80,14 +81,12 @@ function App() {
 
   return (
     <div className="app-container">
-      <TopBar 
+      <TopBar
         meta={meta}
         onFileChange={handleFileChange}
         onDownload={handleDownload}
         downloadMenuOpen={downloadMenuOpen}
         onToggleMenu={() => setDownloadMenuOpen(!downloadMenuOpen)}
-        eyedropperActive={eyedropperActive}
-        onToggleEyedropper={handleToggleEyedropper}
       />
 
       <div className="app-body">
@@ -96,6 +95,11 @@ function App() {
           channels={channels}
           channelStates={channelStates}
           onToggleChannel={toggleChannel}
+        />
+        <ToolPanel
+          onFileChange={handleFileChange}
+          eyedropperActive={eyedropperActive}
+          onToggleEyedropper={handleToggleEyedropper}
         />
         <CanvasArea
           ref={canvasRef}
