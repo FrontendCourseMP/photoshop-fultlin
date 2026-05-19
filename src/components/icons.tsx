@@ -25,3 +25,14 @@ export const EyedropperIcon = () => (
     <line x1="19" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="1.5"/>
   </svg>
 );
+
+export const LevelsIcon = () => (
+  <svg viewBox="0 0 24 24">
+    <rect x="3" y="10" width="4" height="10" fill="currentColor" opacity="0.6"/>
+    <rect x="8" y="6" width="4" height="14" fill="currentColor" opacity="0.8"/>
+    <rect x="13" y="3" width="4" height="17" fill="currentColor"/>
+    <rect x="18" y="8" width="4" height="12" fill="currentColor" opacity="0.7"/>
+    <line x1="2" y1="20" x2="22" y2="20" stroke="currentColor" strokeWidth="1.5"/>
+    <polygon points="2,20 2,4 6,20" fill="currentColor" opacity="0.3"/>
+  </svg>
+);

@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { ChannelPanel } from './ChannelPanel';
 
 interface SidebarProps {
-  originalData: ImageData | null;
+  getSourceImageData: () => ImageData | null;
   channels: number;
   channelStates: boolean[];
   onToggleChannel: (index: number) => void;
 }
 
-export function Sidebar({ originalData, channels, channelStates, onToggleChannel }: SidebarProps) {
+export function Sidebar({ getSourceImageData, channels, channelStates, onToggleChannel }: SidebarProps) {
   const [channelsCollapsed, setChannelsCollapsed] = useState(false);
 
   return (
@@ -30,7 +30,7 @@ export function Sidebar({ originalData, channels, channelStates, onToggleChannel
 
         {!channelsCollapsed && (
           <ChannelPanel
-            originalData={originalData}
+            getSourceImageData={getSourceImageData}
             channels={channels}
             channelStates={channelStates}
             onToggleChannel={onToggleChannel}

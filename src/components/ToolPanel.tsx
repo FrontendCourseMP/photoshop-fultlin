@@ -1,16 +1,17 @@
-import { UploadIcon, EyedropperIcon } from './icons';
+import { UploadIcon, EyedropperIcon, LevelsIcon } from './icons';
 
 interface ToolPanelProps {
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   eyedropperActive: boolean;
   onToggleEyedropper: () => void;
+  onOpenLevels: () => void;
 }
 
-export function ToolPanel({ onFileChange, eyedropperActive, onToggleEyedropper }: ToolPanelProps) {
+export function ToolPanel({ onFileChange, eyedropperActive, onToggleEyedropper, onOpenLevels }: ToolPanelProps) {
   return (
     <div className="tool-panel">
       <div className="tool-panel-group">
-        <label className={`tool-btn${eyedropperActive ? '' : ''}`} title="Загрузить изображение">
+        <label className="tool-btn" title="Загрузить изображение">
           <input
             type="file"
             accept=".png,.jpg,.jpeg,.gb7"
@@ -30,6 +31,13 @@ export function ToolPanel({ onFileChange, eyedropperActive, onToggleEyedropper }
           onClick={onToggleEyedropper}
         >
           <EyedropperIcon />
+        </button>
+        <button
+          className="tool-btn"
+          title="Уровни (Levels)"
+          onClick={onOpenLevels}
+        >
+          <LevelsIcon />
         </button>
       </div>
     </div>

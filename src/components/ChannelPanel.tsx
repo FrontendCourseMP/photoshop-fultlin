@@ -8,13 +8,13 @@ const CHANNEL_LABELS: Record<number, { name: string; short: string }[]> = {
 };
 
 interface ChannelPanelProps {
-  originalData: ImageData | null;
+  getSourceImageData: () => ImageData | null;
   channels: number;
   channelStates: boolean[];
   onToggleChannel: (index: number) => void;
 }
 
-export function ChannelPanel({ originalData, channels, channelStates, onToggleChannel }: ChannelPanelProps) {
+export function ChannelPanel({ getSourceImageData, channels, channelStates, onToggleChannel }: ChannelPanelProps) {
   const canvasRefs = useRef<(HTMLCanvasElement | null)[]>([]);
 
   const setCanvasRef = useCallback((index: number) => (el: HTMLCanvasElement | null) => {
@@ -22,6 +22,7 @@ export function ChannelPanel({ originalData, channels, channelStates, onToggleCh
   }, []);
 
   useEffect(() => {
+    const originalData = getSourceImageData();
     if (!originalData || channels === 0) return;
 
     const { data, width, height } = originalData;
@@ -99,9 +100,11 @@ export function ChannelPanel({ originalData, channels, channelStates, onToggleCh
 
       ctx.putImageData(outData, 0, 0);
     }
-  }, [originalData, channels]);
+  }, [getSourceImageData, channels]);
 
-  if (!originalData || channels === 0) {
+  const hasData = getSourceImageData() !== null;
+
+  if (!hasData || channels === 0) {
     return (
       <div className="channel-panel">
         <div className="channel-empty">Нет изображения</div>

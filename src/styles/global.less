@@ -516,3 +516,276 @@ canvas {
 ::-webkit-scrollbar-track { background: @bg-app; }
 ::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 5px; border: 2px solid @bg-app; }
 ::-webkit-scrollbar-thumb:hover { background: #5a5a5a; }
+
+/* ===== Levels Dialog ===== */
+.levels-dialog {
+  background: @bg-panel;
+  border: 1px solid @border;
+  border-radius: @radius;
+  color: @text-primary;
+  font-family: @font-ui;
+  font-size: 12px;
+  padding: 0;
+  min-width: 360px;
+  max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.levels-dialog-content {
+  padding: @space-md;
+  display: flex;
+  flex-direction: column;
+  gap: @space-sm;
+}
+
+.levels-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: @space-md;
+
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.levels-channel-select select {
+  background: @bg-input;
+  color: @text-primary;
+  border: 1px solid @border;
+  border-radius: @radius;
+  padding: 3px @space-sm;
+  font-size: 11px;
+  cursor: pointer;
+  outline: none;
+
+  &:focus {
+    border-color: @accent;
+  }
+}
+
+.levels-histogram-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.levels-histogram-wrapper {
+  background: #1a1a1a;
+  border: 1px solid @border;
+  border-radius: 2px;
+  padding: 4px;
+}
+
+.levels-histogram {
+  display: block;
+  width: 256px;
+  height: 150px;
+  image-rendering: pixelated;
+}
+
+.levels-histogram-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: @text-secondary;
+  padding: 0 4px;
+  font-family: @font-mono;
+}
+
+.levels-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.levels-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.levels-slider-row {
+  display: flex;
+  align-items: center;
+  gap: @space-sm;
+}
+
+.levels-slider-label {
+  width: 50px;
+  font-size: 11px;
+  color: @text-secondary;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.levels-slider {
+  flex: 1;
+  height: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+
+  &::-webkit-slider-runnable-track {
+    height: 4px;
+    background: @bg-input;
+    border-radius: 2px;
+    border: 1px solid @border;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 14px;
+    background: @accent;
+    border-radius: 2px;
+    margin-top: -6px;
+    border: 1px solid #0098ff;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  &:hover::-webkit-slider-thumb {
+    background: #0098ff;
+  }
+
+  &::-moz-range-track {
+    height: 4px;
+    background: @bg-input;
+    border-radius: 2px;
+    border: 1px solid @border;
+  }
+
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 14px;
+    background: @accent;
+    border-radius: 2px;
+    border: 1px solid #0098ff;
+    cursor: pointer;
+  }
+}
+
+.levels-input {
+  width: 48px;
+  background: @bg-input;
+  color: @text-primary;
+  border: 1px solid @border;
+  border-radius: @radius;
+  padding: 2px @space-xs;
+  font-size: 11px;
+  font-family: @font-mono;
+  text-align: center;
+  outline: none;
+  flex-shrink: 0;
+
+  &:focus {
+    border-color: @accent;
+  }
+}
+
+.levels-slider-markers {
+  position: relative;
+  height: 16px;
+  margin: 2px 0;
+}
+
+.levels-gradient-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4px;
+  height: 8px;
+  background: linear-gradient(to right, #000, #fff);
+  border-radius: 2px;
+  border: 1px solid @border;
+}
+
+.levels-marker {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 16px;
+  margin-left: -1px;
+  cursor: pointer;
+  border-radius: 1px;
+}
+
+.levels-marker-black {
+  background: #444;
+  border: 1px solid #888;
+}
+
+.levels-marker-gamma {
+  background: #888;
+  border: 1px solid #ccc;
+}
+
+.levels-marker-white {
+  background: #ddd;
+  border: 1px solid #fff;
+}
+
+.levels-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: @space-md;
+  padding: 2px 0;
+}
+
+.levels-checkbox {
+  display: flex;
+  align-items: center;
+  gap: @space-xs;
+  font-size: 11px;
+  color: @text-secondary;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    accent-color: @accent;
+    cursor: pointer;
+  }
+}
+
+.levels-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: @space-sm;
+  padding-top: @space-sm;
+  border-top: 1px solid @border;
+}
+
+.levels-btn {
+  padding: 4px 14px;
+  background: @bg-input;
+  color: @text-primary;
+  border: 1px solid @border;
+  border-radius: @radius;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.1s;
+
+  &:hover {
+    background: #4a4a4a;
+    border-color: @accent;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.levels-btn-primary {
+  background: @accent;
+  border-color: @accent;
+  color: white;
+
+  &:hover {
+    background: #0098ff;
+  }
+}

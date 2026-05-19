@@ -6,22 +6,28 @@ import { Sidebar } from './components/Sidebar';
 import { CanvasArea } from './components/CanvasArea';
 import { StatusBar } from './components/StatusBar';
 import { EyedropperPopup } from './components/Eyedropper';
+import { LevelsDialog } from './components/LevelsDialog';
 import { rgbToLab } from './core/color';
 import type { EyedropperInfo } from './core/types';
+import type { LevelsChannelState } from './core/levels';
 import './styles/global.less';
 
 function App() {
   const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
+  const [levelsOpen, setLevelsOpen] = useState(false);
   const {
     canvasRef,
     meta,
     status,
     handleFileChange,
     handleDownload,
-    originalData,
+    getSourceImageData,
     channelStates,
     toggleChannel,
     channels,
+    onLevelsPreview,
+    clearLevelsPreview,
+    applyLevels,
   } = useImageProcessor();
 
   const [eyedropperActive, setEyedropperActive] = useState(false);
@@ -38,7 +44,7 @@ function App() {
   }, []);
 
   const handleEyedropperPick = useCallback((e: React.MouseEvent, px: number, py: number) => {
-    const data = originalData;
+    const data = getSourceImageData();
     if (!data) return;
 
     const idx = (py * data.width + px) * 4;
@@ -49,12 +55,27 @@ function App() {
 
     setEyedropperInfo({ x: px, y: py, r, g, b, L: lab.L, a: lab.a, labB: lab.b });
     setEyedropperPos({ x: e.clientX, y: e.clientY });
-  }, [originalData]);
+  }, [getSourceImageData]);
 
   const closeEyedropper = useCallback(() => {
     setEyedropperInfo(null);
     setEyedropperActive(false);
   }, []);
+
+  const handleOpenLevels = useCallback(() => {
+    setEyedropperActive(false);
+    setLevelsOpen(true);
+  }, []);
+
+  const handleLevelsApply = useCallback((state: LevelsChannelState) => {
+    applyLevels(state);
+    setLevelsOpen(false);
+  }, [applyLevels]);
+
+  const handleLevelsCancel = useCallback(() => {
+    clearLevelsPreview();
+    setLevelsOpen(false);
+  }, [clearLevelsPreview]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -91,7 +112,7 @@ function App() {
 
       <div className="app-body">
         <Sidebar
-          originalData={originalData}
+          getSourceImageData={getSourceImageData}
           channels={channels}
           channelStates={channelStates}
           onToggleChannel={toggleChannel}
@@ -100,6 +121,7 @@ function App() {
           onFileChange={handleFileChange}
           eyedropperActive={eyedropperActive}
           onToggleEyedropper={handleToggleEyedropper}
+          onOpenLevels={handleOpenLevels}
         />
         <CanvasArea
           ref={canvasRef}
@@ -117,6 +139,18 @@ function App() {
           info={eyedropperInfo}
           position={eyedropperPos}
           onClose={closeEyedropper}
+        />
+      )}
+
+      {levelsOpen && (
+        <LevelsDialog
+          open={levelsOpen}
+          getSourceImageData={getSourceImageData}
+          channels={channels}
+          onPreview={onLevelsPreview}
+          onApply={handleLevelsApply}
+          onCancel={handleLevelsCancel}
+          clearPreview={clearLevelsPreview}
         />
       )}
     </div>
