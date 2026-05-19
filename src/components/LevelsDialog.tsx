@@ -16,6 +16,7 @@ interface LevelsDialogProps {
   onApply: (state: LevelsChannelState) => void;
   onCancel: () => void;
   clearPreview: () => void;
+  onReset: () => void;
 }
 
 const CHANNEL_OPTIONS: { value: ChannelMode; label: string }[] = [
@@ -37,6 +38,7 @@ export function LevelsDialog({
   onApply,
   onCancel,
   clearPreview,
+  onReset,
 }: LevelsDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const histCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -125,13 +127,8 @@ export function LevelsDialog({
   const handleReset = useCallback(() => {
     const def = createDefaultLevelsState();
     setLevelsState(def);
-    previewRef.current = previewEnabled;
-    if (previewEnabled) {
-      onPreview(def);
-    } else {
-      clearPreview();
-    }
-  }, [previewEnabled, onPreview, clearPreview]);
+    onReset();
+  }, [onReset]);
 
   const handleCancel = useCallback(() => {
     clearPreview();

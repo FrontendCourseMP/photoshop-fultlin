@@ -3,11 +3,10 @@ import { useCanvasNavigation } from '../hooks/useCanvasNavigation';
 import type { CanvasAreaProps } from '../core';
 
 export const CanvasArea = forwardRef<HTMLCanvasElement, CanvasAreaProps>(
-  ({ width = 0, height = 0, onScaleChange, eyedropperActive, onEyedropperPick }, ref: ForwardedRef<HTMLCanvasElement>) => {
+  ({ displayWidth = 0, displayHeight = 0, eyedropperActive, onEyedropperPick }, ref: ForwardedRef<HTMLCanvasElement>) => {
     const {
       containerRef,
       transform,
-      scale,
       isDragging,
       setImageSize,
       onMouseDown: navOnMouseDown,
@@ -17,16 +16,10 @@ export const CanvasArea = forwardRef<HTMLCanvasElement, CanvasAreaProps>(
     } = useCanvasNavigation();
 
     useEffect(() => {
-      if (width > 0 && height > 0) {
-        setImageSize(width, height);
+      if (displayWidth > 0 && displayHeight > 0) {
+        setImageSize(displayWidth, displayHeight);
       }
-    }, [width, height, setImageSize]);
-
-    useEffect(() => {
-      if (onScaleChange) {
-        onScaleChange(scale);
-      }
-    }, [scale, onScaleChange]);
+    }, [displayWidth, displayHeight, setImageSize]);
 
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
       if (eyedropperActive && e.button === 0 && !e.ctrlKey && !e.metaKey) {
@@ -52,8 +45,7 @@ export const CanvasArea = forwardRef<HTMLCanvasElement, CanvasAreaProps>(
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseLeave}
         style={{
-          cursor: eyedropperActive ? 'crosshair' : isDragging ? 'grabbing' : scale !== 1 ? 'grab' : 'default',
-          overflow: 'hidden'
+          cursor: eyedropperActive ? 'crosshair' : isDragging ? 'grabbing' : 'default'
         }}
       >
         <div
@@ -66,12 +58,11 @@ export const CanvasArea = forwardRef<HTMLCanvasElement, CanvasAreaProps>(
         >
           <canvas
             ref={ref}
-            width={width}
-            height={height}
+            width={displayWidth}
+            height={displayHeight}
             style={{
               display: 'block',
               boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
-              imageRendering: 'pixelated',
               userSelect: 'none',
               pointerEvents: 'none'
             }}

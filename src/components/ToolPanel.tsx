@@ -1,13 +1,14 @@
-import { UploadIcon, EyedropperIcon, LevelsIcon } from './icons';
+import { UploadIcon, EyedropperIcon, LevelsIcon, ScaleIcon } from './icons';
 
 interface ToolPanelProps {
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   eyedropperActive: boolean;
   onToggleEyedropper: () => void;
   onOpenLevels: () => void;
+  onOpenScale: () => void;
 }
 
-export function ToolPanel({ onFileChange, eyedropperActive, onToggleEyedropper, onOpenLevels }: ToolPanelProps) {
+export function ToolPanel({ onFileChange, eyedropperActive, onToggleEyedropper, onOpenLevels, onOpenScale }: ToolPanelProps) {
   return (
     <div className="tool-panel">
       <div className="tool-panel-group">
@@ -38,6 +39,13 @@ export function ToolPanel({ onFileChange, eyedropperActive, onToggleEyedropper, 
           onClick={onOpenLevels}
         >
           <LevelsIcon />
+        </button>
+        <button
+          className="tool-btn"
+          title="Масштабирование"
+          onClick={onOpenScale}
+        >
+          <ScaleIcon />
         </button>
       </div>
     </div>

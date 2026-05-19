@@ -5,8 +5,12 @@ export function TopBar({
   meta,
   onDownload,
   downloadMenuOpen,
-  onToggleMenu
+  onToggleMenu,
+  displayScale,
+  onDisplayScaleChange
 }: TopBarProps) {
+  const scalePercent = Math.round(displayScale * 100);
+
   return (
     <header className="top-bar">
       <div className="file-info">
@@ -16,6 +20,21 @@ export function TopBar({
       </div>
 
       <div className="toolbar-actions">
+        {meta.format && (
+          <div className="scale-control">
+            <span className="scale-label">{scalePercent}%</span>
+            <input
+              type="range"
+              className="scale-slider"
+              min={12}
+              max={300}
+              step={1}
+              value={scalePercent}
+              onChange={e => onDisplayScaleChange(Number(e.target.value) / 100)}
+              title="Масштаб отображения"
+            />
+          </div>
+        )}
         <DownloadMenu
           onDownload={onDownload}
           isOpen={downloadMenuOpen}

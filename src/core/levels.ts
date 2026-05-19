@@ -85,7 +85,7 @@ export function applyLevelsToData(
     }
   }
 
-  return new ImageData(result, width, height);
+  return new ImageData(result, width, height) as unknown as ImageData;
 }
 
 export type LevelsChannelState = Record<'red' | 'green' | 'blue' | 'alpha', LevelsParams>;

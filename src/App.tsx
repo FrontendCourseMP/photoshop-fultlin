@@ -7,14 +7,17 @@ import { CanvasArea } from './components/CanvasArea';
 import { StatusBar } from './components/StatusBar';
 import { EyedropperPopup } from './components/Eyedropper';
 import { LevelsDialog } from './components/LevelsDialog';
+import { ScaleDialog } from './components/ScaleDialog';
 import { rgbToLab } from './core/color';
 import type { EyedropperInfo } from './core/types';
 import type { LevelsChannelState } from './core/levels';
+
 import './styles/global.less';
 
 function App() {
   const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
   const [levelsOpen, setLevelsOpen] = useState(false);
+  const [scaleOpen, setScaleOpen] = useState(false);
   const {
     canvasRef,
     meta,
@@ -22,12 +25,20 @@ function App() {
     handleFileChange,
     handleDownload,
     getSourceImageData,
+    getProcessedSourceImageData,
     channelStates,
     toggleChannel,
     channels,
     onLevelsPreview,
     clearLevelsPreview,
     applyLevels,
+    resetLevels,
+    displayScale,
+    displayWidth,
+    displayHeight,
+    setDisplayScale,
+    interpolationMethod,
+    resizeImage,
   } = useImageProcessor();
 
   const [eyedropperActive, setEyedropperActive] = useState(false);
@@ -44,7 +55,7 @@ function App() {
   }, []);
 
   const handleEyedropperPick = useCallback((e: React.MouseEvent, px: number, py: number) => {
-    const data = getSourceImageData();
+    const data = getProcessedSourceImageData();
     if (!data) return;
 
     const idx = (py * data.width + px) * 4;
@@ -55,7 +66,7 @@ function App() {
 
     setEyedropperInfo({ x: px, y: py, r, g, b, L: lab.L, a: lab.a, labB: lab.b });
     setEyedropperPos({ x: e.clientX, y: e.clientY });
-  }, [getSourceImageData]);
+  }, [getProcessedSourceImageData]);
 
   const closeEyedropper = useCallback(() => {
     setEyedropperInfo(null);
@@ -72,10 +83,27 @@ function App() {
     setLevelsOpen(false);
   }, [applyLevels]);
 
+  const handleLevelsReset = useCallback(() => {
+    resetLevels();
+  }, [resetLevels]);
+
   const handleLevelsCancel = useCallback(() => {
     clearLevelsPreview();
     setLevelsOpen(false);
   }, [clearLevelsPreview]);
+
+  const handleOpenScale = useCallback(() => {
+    setScaleOpen(true);
+  }, []);
+
+  const handleScaleApply = useCallback((width: number, height: number, method: import('./core/interpolation').InterpolationMethod) => {
+    resizeImage(width, height, method);
+    setScaleOpen(false);
+  }, [resizeImage]);
+
+  const handleScaleCancel = useCallback(() => {
+    setScaleOpen(false);
+  }, []);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -108,6 +136,8 @@ function App() {
         onDownload={handleDownload}
         downloadMenuOpen={downloadMenuOpen}
         onToggleMenu={() => setDownloadMenuOpen(!downloadMenuOpen)}
+        displayScale={displayScale}
+        onDisplayScaleChange={setDisplayScale}
       />
 
       <div className="app-body">
@@ -122,11 +152,12 @@ function App() {
           eyedropperActive={eyedropperActive}
           onToggleEyedropper={handleToggleEyedropper}
           onOpenLevels={handleOpenLevels}
+          onOpenScale={handleOpenScale}
         />
         <CanvasArea
           ref={canvasRef}
-          width={meta.width}
-          height={meta.height}
+          displayWidth={displayWidth}
+          displayHeight={displayHeight}
           eyedropperActive={eyedropperActive}
           onEyedropperPick={handleEyedropperPick}
         />
@@ -151,6 +182,18 @@ function App() {
           onApply={handleLevelsApply}
           onCancel={handleLevelsCancel}
           clearPreview={clearLevelsPreview}
+          onReset={handleLevelsReset}
+        />
+      )}
+
+      {scaleOpen && (
+        <ScaleDialog
+          open={scaleOpen}
+          sourceWidth={meta.width}
+          sourceHeight={meta.height}
+          interpolationMethod={interpolationMethod}
+          onApply={handleScaleApply}
+          onCancel={handleScaleCancel}
         />
       )}
     </div>

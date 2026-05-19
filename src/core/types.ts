@@ -46,7 +46,8 @@ export interface NavigationState {
 export interface CanvasAreaProps {
   width?: number;
   height?: number;
-  onScaleChange?: (scale: number) => void;
+  displayWidth?: number;
+  displayHeight?: number;
   eyedropperActive?: boolean;
   onEyedropperPick?: (e: React.MouseEvent, pixelX: number, pixelY: number) => void;
 }
@@ -84,4 +85,14 @@ export interface TopBarProps {
 
 export interface StatusBarProps {
   status: string;
+}
+
+export interface TopBarProps {
+  meta: ImageMeta;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onDownload: (format: 'png' | 'jpg' | 'gb7') => void;
+  downloadMenuOpen: boolean;
+  onToggleMenu: () => void;
+  displayScale: number;
+  onDisplayScaleChange: (scale: number) => void;
 }
