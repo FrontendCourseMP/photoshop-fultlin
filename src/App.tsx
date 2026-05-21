@@ -8,9 +8,11 @@ import { StatusBar } from './components/StatusBar';
 import { EyedropperPopup } from './components/Eyedropper';
 import { LevelsDialog } from './components/LevelsDialog';
 import { ScaleDialog } from './components/ScaleDialog';
+import { ConvolutionDialog } from './components/ConvolutionDialog';
 import { rgbToLab } from './core/color';
 import type { EyedropperInfo } from './core/types';
 import type { LevelsChannelState } from './core/levels';
+import type { ConvolutionParams } from './core/convolution';
 
 import './styles/global.less';
 
@@ -18,6 +20,7 @@ function App() {
   const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
   const [levelsOpen, setLevelsOpen] = useState(false);
   const [scaleOpen, setScaleOpen] = useState(false);
+  const [convolutionOpen, setConvolutionOpen] = useState(false);
   const {
     canvasRef,
     meta,
@@ -33,6 +36,10 @@ function App() {
     clearLevelsPreview,
     applyLevels,
     resetLevels,
+    onConvolutionPreview,
+    clearConvolutionPreview,
+    applyConvolutionFilter,
+    resetConvolution,
     displayScale,
     displayWidth,
     displayHeight,
@@ -105,6 +112,24 @@ function App() {
     setScaleOpen(false);
   }, []);
 
+  const handleOpenConvolution = useCallback(() => {
+    setConvolutionOpen(true);
+  }, []);
+
+  const handleConvolutionApply = useCallback((params: ConvolutionParams) => {
+    applyConvolutionFilter(params);
+    setConvolutionOpen(false);
+  }, [applyConvolutionFilter]);
+
+  const handleConvolutionReset = useCallback(() => {
+    resetConvolution();
+  }, [resetConvolution]);
+
+  const handleConvolutionCancel = useCallback(() => {
+    clearConvolutionPreview();
+    setConvolutionOpen(false);
+  }, [clearConvolutionPreview]);
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -153,6 +178,7 @@ function App() {
           onToggleEyedropper={handleToggleEyedropper}
           onOpenLevels={handleOpenLevels}
           onOpenScale={handleOpenScale}
+          onOpenConvolution={handleOpenConvolution}
         />
         <CanvasArea
           ref={canvasRef}
@@ -194,6 +220,17 @@ function App() {
           interpolationMethod={interpolationMethod}
           onApply={handleScaleApply}
           onCancel={handleScaleCancel}
+        />
+      )}
+
+      {convolutionOpen && (
+        <ConvolutionDialog
+          open={convolutionOpen}
+          onPreview={onConvolutionPreview}
+          onApply={handleConvolutionApply}
+          onCancel={handleConvolutionCancel}
+          clearPreview={clearConvolutionPreview}
+          onReset={handleConvolutionReset}
         />
       )}
     </div>

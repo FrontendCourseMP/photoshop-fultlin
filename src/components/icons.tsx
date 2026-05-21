@@ -37,6 +37,20 @@ export const ScaleIcon = () => (
   </svg>
 );
 
+export const ConvolutionIcon = () => (
+  <svg viewBox="0 0 24 24">
+    <rect x="3" y="3" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="10" y="3" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="17" y="3" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="3" y="10" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="10" y="10" width="4" height="4" fill="currentColor"/>
+    <rect x="17" y="10" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="3" y="17" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="10" y="17" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="17" y="17" width="4" height="4" fill="currentColor" opacity="0.6"/>
+  </svg>
+);
+
 export const LevelsIcon = () => (
   <svg viewBox="0 0 24 24">
     <rect x="3" y="10" width="4" height="10" fill="currentColor" opacity="0.6"/>

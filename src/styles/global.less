@@ -1059,3 +1059,186 @@ canvas {
     background: #0098ff;
   }
 }
+
+/* ===== Convolution Dialog ===== */
+.conv-dialog {
+  background: @bg-panel;
+  border: 1px solid @border;
+  border-radius: @radius;
+  color: @text-primary;
+  font-family: @font-ui;
+  font-size: 12px;
+  padding: 0;
+  min-width: 340px;
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.conv-dialog-content {
+  padding: @space-md;
+  display: flex;
+  flex-direction: column;
+  gap: @space-sm;
+}
+
+.conv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.conv-preset-row {
+  display: flex;
+  align-items: center;
+  gap: @space-sm;
+}
+
+.conv-label {
+  font-size: 11px;
+  color: @text-secondary;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.conv-select {
+  flex: 1;
+  background: @bg-input;
+  color: @text-primary;
+  border: 1px solid @border;
+  border-radius: @radius;
+  padding: 3px @space-sm;
+  font-size: 11px;
+  cursor: pointer;
+  outline: none;
+
+  &:focus {
+    border-color: @accent;
+  }
+}
+
+.conv-kernel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.conv-kernel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  max-width: 210px;
+}
+
+.conv-kernel-input {
+  width: 100%;
+  background: @bg-input;
+  color: @text-primary;
+  border: 1px solid @border;
+  border-radius: @radius;
+  padding: 4px @space-xs;
+  font-size: 11px;
+  font-family: @font-mono;
+  text-align: center;
+  outline: none;
+
+  &:focus {
+    border-color: @accent;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
+
+.conv-channels-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.conv-channels-row {
+  display: flex;
+  align-items: center;
+  gap: @space-md;
+  flex-wrap: wrap;
+}
+
+.conv-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: @text-secondary;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    accent-color: @accent;
+    cursor: pointer;
+  }
+}
+
+.conv-checkbox-all {
+  margin-left: auto;
+  font-weight: 600;
+  color: @text-primary;
+}
+
+.conv-edge-row {
+  display: flex;
+  align-items: center;
+  gap: @space-sm;
+}
+
+.conv-options {
+  display: flex;
+  align-items: center;
+  gap: @space-md;
+  padding: 2px 0;
+}
+
+.conv-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: @space-sm;
+  padding-top: @space-sm;
+  border-top: 1px solid @border;
+}
+
+.conv-btn {
+  padding: 4px 14px;
+  background: @bg-input;
+  color: @text-primary;
+  border: 1px solid @border;
+  border-radius: @radius;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.1s;
+
+  &:hover {
+    background: #4a4a4a;
+    border-color: @accent;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.conv-btn-primary {
+  background: @accent;
+  border-color: @accent;
+  color: white;
+
+  &:hover {
+    background: #0098ff;
+  }
+}

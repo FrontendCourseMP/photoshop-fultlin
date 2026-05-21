@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { decodeGB7ToImageData, encodeImageDataToGB7, downloadGB7, type ImageMeta, type LevelsChannelState } from '../core';
 import { InterpolationMethod, scaleImageData } from '../core/interpolation';
+import { applyConvolution, type ConvolutionParams } from '../core/convolution';
 
 const MIN_SCALE = 0.12;
 const MAX_SCALE = 3.0;
@@ -26,6 +27,9 @@ export function useImageProcessor() {
   const [channels, setChannels] = useState(0);
   const previewLevelsRef = useRef<LevelsChannelState | null>(null);
   const committedLevelsRef = useRef<LevelsChannelState | null>(null);
+  const convolutionPreviewParamsRef = useRef<ConvolutionParams | null>(null);
+  const convolutionPreviewDataRef = useRef<ImageData | null>(null);
+  const convolutionCommitted = useRef<boolean>(false);
   const workBufferRef = useRef<Uint8ClampedArray | null>(null);
   const workImageDataRef = useRef<ImageData | null>(null);
 
@@ -206,13 +210,19 @@ export function useImageProcessor() {
       return;
     }
 
-    const srcCtx = source.getContext('2d', { willReadFrequently: true });
-    if (!srcCtx) return;
-    const sourceData = srcCtx.getImageData(0, 0, srcW, srcH);
+    let sourceData: ImageData;
+
+    if (convolutionPreviewDataRef.current) {
+      sourceData = convolutionPreviewDataRef.current;
+    } else {
+      const srcCtx = source.getContext('2d', { willReadFrequently: true });
+      if (!srcCtx) return;
+      sourceData = srcCtx.getImageData(0, 0, srcW, srcH);
+    }
 
     let processForInterp: ImageData;
 
-    if (allOn && !hasLevels) {
+    if (allOn && !hasLevels && !convolutionPreviewDataRef.current) {
       processForInterp = sourceData;
     } else {
       const imgData = getWorkImageData(srcW, srcH);
@@ -414,6 +424,67 @@ export function useImageProcessor() {
     renderWithChannels(channelStates, channels, displayScale, interpolationMethod);
   }, [channelStates, channels, renderWithChannels, displayScale, interpolationMethod]);
 
+  const onConvolutionPreview = useCallback((params: ConvolutionParams) => {
+    const source = sourceCanvasRef.current;
+    if (!source) return;
+    const srcCtx = source.getContext('2d', { willReadFrequently: true });
+    if (!srcCtx) return;
+
+    convolutionPreviewParamsRef.current = params;
+
+    const srcData = srcCtx.getImageData(0, 0, source.width, source.height);
+    const result = applyConvolution(
+      srcData.data,
+      source.width,
+      source.height,
+      params.kernel,
+      params.edgeHandling,
+      params.channels
+    );
+    convolutionPreviewDataRef.current = result;
+
+    renderWithChannels(channelStates, channels, displayScale, interpolationMethod);
+  }, [channelStates, channels, renderWithChannels, displayScale, interpolationMethod]);
+
+  const clearConvolutionPreview = useCallback(() => {
+    convolutionPreviewParamsRef.current = null;
+    convolutionPreviewDataRef.current = null;
+    renderWithChannels(channelStates, channels, displayScale, interpolationMethod);
+  }, [channelStates, channels, renderWithChannels, displayScale, interpolationMethod]);
+
+  const applyConvolutionFilter = useCallback((params: ConvolutionParams) => {
+    const source = sourceCanvasRef.current;
+    if (!source) return;
+
+    const srcCtx = source.getContext('2d', { willReadFrequently: true });
+    if (!srcCtx) return;
+
+    const srcData = srcCtx.getImageData(0, 0, source.width, source.height);
+    const result = applyConvolution(
+      srcData.data,
+      source.width,
+      source.height,
+      params.kernel,
+      params.edgeHandling,
+      params.channels
+    );
+
+    const dstCtx = source.getContext('2d')!;
+    dstCtx.putImageData(result, 0, 0);
+
+    convolutionPreviewParamsRef.current = null;
+    convolutionPreviewDataRef.current = null;
+
+    renderWithChannels(channelStates, channels, displayScale, interpolationMethod);
+    setStatus('Фильтр применён');
+  }, [channelStates, channels, renderWithChannels, displayScale, interpolationMethod, setStatus]);
+
+  const resetConvolution = useCallback(() => {
+    convolutionPreviewParamsRef.current = null;
+    convolutionPreviewDataRef.current = null;
+    renderWithChannels(channelStates, channels, displayScale, interpolationMethod);
+  }, [channelStates, channels, renderWithChannels, displayScale, interpolationMethod]);
+
   const resizeImage = useCallback((newWidth: number, newHeight: number, method: InterpolationMethod) => {
     const source = sourceCanvasRef.current;
     if (!source) return;
@@ -526,6 +597,10 @@ export function useImageProcessor() {
     clearLevelsPreview,
     applyLevels,
     resetLevels,
+    onConvolutionPreview,
+    clearConvolutionPreview,
+    applyConvolutionFilter,
+    resetConvolution,
     displayScale,
     displayWidth,
     displayHeight,
