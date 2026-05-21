@@ -29,9 +29,9 @@ export function useImageProcessor() {
   const committedLevelsRef = useRef<LevelsChannelState | null>(null);
   const convolutionPreviewParamsRef = useRef<ConvolutionParams | null>(null);
   const convolutionPreviewDataRef = useRef<ImageData | null>(null);
-  const convolutionCommitted = useRef<boolean>(false);
   const workBufferRef = useRef<Uint8ClampedArray | null>(null);
   const workImageDataRef = useRef<ImageData | null>(null);
+  const sourceDataRef = useRef<ImageData | null>(null);
 
   const [displayScale, setDisplayScaleState] = useState<number>(1);
   const [interpolationMethod, setInterpolationMethodState] = useState<InterpolationMethod>(InterpolationMethod.Bilinear);
@@ -151,13 +151,19 @@ export function useImageProcessor() {
   function getProcessedSourceImageData(): ImageData | null {
     const source = sourceCanvasRef.current;
     if (!source) return null;
-    const srcCtx = source.getContext('2d', { willReadFrequently: true });
-    if (!srcCtx) return null;
 
     const hasAlpha = channels === 2 || channels === 4;
     const allOn = channels > 0 && channelStates.length === channels && channelStates.every(s => s);
     const hasLevels = previewLevelsRef.current || committedLevelsRef.current;
-    const sourceData = srcCtx.getImageData(0, 0, source.width, source.height);
+
+    let sourceData: ImageData;
+    if (sourceDataRef.current && sourceDataRef.current.width === source.width && sourceDataRef.current.height === source.height) {
+      sourceData = sourceDataRef.current;
+    } else {
+      const srcCtx = source.getContext('2d', { willReadFrequently: true });
+      if (!srcCtx) return null;
+      sourceData = srcCtx.getImageData(0, 0, source.width, source.height);
+    }
 
     if (allOn && !hasLevels) {
       return sourceData;
@@ -214,6 +220,8 @@ export function useImageProcessor() {
 
     if (convolutionPreviewDataRef.current) {
       sourceData = convolutionPreviewDataRef.current;
+    } else if (sourceDataRef.current && sourceDataRef.current.width === srcW && sourceDataRef.current.height === srcH) {
+      sourceData = sourceDataRef.current;
     } else {
       const srcCtx = source.getContext('2d', { willReadFrequently: true });
       if (!srcCtx) return;
@@ -344,11 +352,11 @@ export function useImageProcessor() {
         h = imageData.height;
         srcCanvas.width = w;
         srcCanvas.height = h;
-        const imgData = makeImageData(
+        sourceDataRef.current = makeImageData(
           new Uint8ClampedArray(imageData.data),
           w, h
         );
-        srcCtx.putImageData(imgData, 0, 0);
+        srcCtx.putImageData(sourceDataRef.current, 0, 0);
       } else {
         const img = new Image();
         const url = URL.createObjectURL(file);
@@ -364,6 +372,7 @@ export function useImageProcessor() {
         srcCanvas.width = w;
         srcCanvas.height = h;
         srcCtx.drawImage(img, 0, 0);
+        sourceDataRef.current = srcCtx.getImageData(0, 0, w, h);
         URL.revokeObjectURL(url);
       }
 
@@ -456,10 +465,9 @@ export function useImageProcessor() {
     const source = sourceCanvasRef.current;
     if (!source) return;
 
-    const srcCtx = source.getContext('2d', { willReadFrequently: true });
-    if (!srcCtx) return;
+    const srcData = sourceDataRef.current;
+    if (!srcData) return;
 
-    const srcData = srcCtx.getImageData(0, 0, source.width, source.height);
     const result = applyConvolution(
       srcData.data,
       source.width,
@@ -469,6 +477,7 @@ export function useImageProcessor() {
       params.channels
     );
 
+    sourceDataRef.current = result;
     const dstCtx = source.getContext('2d')!;
     dstCtx.putImageData(result, 0, 0);
 
@@ -490,14 +499,14 @@ export function useImageProcessor() {
     if (!source) return;
     if (newWidth <= 0 || newHeight <= 0) return;
 
-    const srcCtx = source.getContext('2d', { willReadFrequently: true });
-    if (!srcCtx) return;
+    const srcData = sourceDataRef.current;
+    if (!srcData) return;
 
-    const sourceData = srcCtx.getImageData(0, 0, source.width, source.height);
-    const scaledData = scaleImageData(sourceData, newWidth, newHeight, method);
+    const scaledData = scaleImageData(srcData, newWidth, newHeight, method);
 
     source.width = newWidth;
     source.height = newHeight;
+    sourceDataRef.current = scaledData;
     const dstCtx = source.getContext('2d')!;
     dstCtx.putImageData(scaledData, 0, 0);
 
@@ -527,19 +536,26 @@ export function useImageProcessor() {
       tmpCanvas.height = source.height;
       const tmpCtx = tmpCanvas.getContext('2d')!;
 
-      if (channels > 0 && channelStates.length === channels && channelStates.every(s => s) && !previewLevelsRef.current) {
+      const allChannelsOn = channels > 0 && channelStates.length === channels && channelStates.every(s => s);
+
+      if (allChannelsOn && !previewLevelsRef.current) {
         tmpCtx.drawImage(source, 0, 0);
       } else {
         const hasAlpha = channels === 2 || channels === 4;
-        const srcCtx = source.getContext('2d', { willReadFrequently: true });
-        if (!srcCtx) return;
-        const srcData = srcCtx.getImageData(0, 0, source.width, source.height);
+        let srcData: ImageData;
+        if (sourceDataRef.current && sourceDataRef.current.width === source.width && sourceDataRef.current.height === source.height) {
+          srcData = sourceDataRef.current;
+        } else {
+          const srcCtx = source.getContext('2d', { willReadFrequently: true });
+          if (!srcCtx) return;
+          srcData = srcCtx.getImageData(0, 0, source.width, source.height);
+        }
         const imgData = makeImageData(
           new Uint8ClampedArray(srcData.data),
           source.width, source.height
         );
 
-        if (!(channels > 0 && channelStates.length === channels && channelStates.every(s => s))) {
+        if (!allChannelsOn) {
           applyChannels(imgData.data, channelStates, channels, hasAlpha);
         }
         if (previewLevelsRef.current) {
