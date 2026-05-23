@@ -221,9 +221,10 @@ export function ConvolutionDialog({
           <label className="conv-label">Предустановка:</label>
           <select
             className="conv-select"
-            value={state.presetIndex}
+            value={state.presetIndex < 0 ? -1 : state.presetIndex}
             onChange={e => handlePresetChange(Number(e.target.value))}
           >
+            <option value={-1} disabled>Пользовательская</option>
             {CONVOLUTION_PRESETS.map((p, i) => (
               <option key={i} value={i}>{p.name}</option>
             ))}

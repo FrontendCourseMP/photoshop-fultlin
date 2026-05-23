@@ -45,6 +45,7 @@ function App() {
     displayHeight,
     setDisplayScale,
     interpolationMethod,
+    setInterpolationMethod,
     resizeImage,
   } = useImageProcessor();
 
@@ -62,22 +63,36 @@ function App() {
   }, []);
 
   const handleEyedropperPick = useCallback((e: React.MouseEvent, px: number, py: number) => {
+    if (eyedropperInfo) {
+      setEyedropperInfo(null);
+      return;
+    }
+
     const data = getProcessedSourceImageData();
     if (!data) return;
 
-    const idx = (py * data.width + px) * 4;
+    const srcX = Math.floor(px / displayScale);
+    const srcY = Math.floor(py / displayScale);
+    const clampedX = Math.max(0, Math.min(srcX, data.width - 1));
+    const clampedY = Math.max(0, Math.min(srcY, data.height - 1));
+    const idx = (clampedY * data.width + clampedX) * 4;
     const r = data.data[idx];
     const g = data.data[idx + 1];
     const b = data.data[idx + 2];
+    const alpha = data.data[idx + 3];
     const lab = rgbToLab(r, g, b);
 
-    setEyedropperInfo({ x: px, y: py, r, g, b, L: lab.L, a: lab.a, labB: lab.b });
+    setEyedropperInfo({ x: clampedX, y: clampedY, r, g, b, alpha, L: lab.L, a: lab.a, labB: lab.b });
     setEyedropperPos({ x: e.clientX, y: e.clientY });
-  }, [getProcessedSourceImageData]);
+  }, [getProcessedSourceImageData, displayScale, eyedropperInfo]);
 
   const closeEyedropper = useCallback(() => {
     setEyedropperInfo(null);
     setEyedropperActive(false);
+  }, []);
+
+  const closeEyedropperPopup = useCallback(() => {
+    setEyedropperInfo(null);
   }, []);
 
   const handleOpenLevels = useCallback(() => {
@@ -163,6 +178,8 @@ function App() {
         onToggleMenu={() => setDownloadMenuOpen(!downloadMenuOpen)}
         displayScale={displayScale}
         onDisplayScaleChange={setDisplayScale}
+        interpolationMethod={interpolationMethod}
+        onInterpolationMethodChange={setInterpolationMethod}
       />
 
       <div className="app-body">
@@ -195,7 +212,7 @@ function App() {
         <EyedropperPopup
           info={eyedropperInfo}
           position={eyedropperPos}
-          onClose={closeEyedropper}
+          onClose={closeEyedropperPopup}
         />
       )}
 

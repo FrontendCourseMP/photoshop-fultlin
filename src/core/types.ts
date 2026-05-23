@@ -58,6 +58,7 @@ export interface EyedropperInfo {
   r: number;
   g: number;
   b: number;
+  alpha: number;
   L: number;
   a: number;
   labB: number;
@@ -95,4 +96,6 @@ export interface TopBarProps {
   onToggleMenu: () => void;
   displayScale: number;
   onDisplayScaleChange: (scale: number) => void;
+  interpolationMethod: string;
+  onInterpolationMethodChange: (method: string) => void;
 }

@@ -8,6 +8,7 @@ export function EyedropperPopup({ info, position, onClose }: EyedropperProps) {
   const popupY = Math.min(position.y + 15, window.innerHeight - 180);
 
   const lab = rgbToLab(info.r, info.g, info.b);
+  const isTransparent = info.alpha < 255;
 
   return (
     <>
@@ -16,7 +17,23 @@ export function EyedropperPopup({ info, position, onClose }: EyedropperProps) {
         className="eyedropper-popup"
         style={{ left: popupX, top: popupY }}
       >
-        <div className="eyedropper-color-swatch" style={{ background: `rgb(${info.r},${info.g},${info.b})` }} />
+        <div
+          className="eyedropper-color-swatch"
+          style={{
+            background: isTransparent
+              ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='8' height='8' fill='%23ccc'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23ccc'/%3E%3Crect x='8' width='8' height='8' fill='%23fff'/%3E%3Crect y='8' width='8' height='8' fill='%23fff'/%3E%3C/svg%3E")`
+              : undefined,
+            backgroundBlendMode: isTransparent ? 'normal' : undefined,
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              background: `rgba(${info.r},${info.g},${info.b},${info.alpha / 255})`,
+            }}
+          />
+        </div>
         <table className="eyedropper-info">
           <tbody>
             <tr>
@@ -32,6 +49,8 @@ export function EyedropperPopup({ info, position, onClose }: EyedropperProps) {
               <td className="info-value">{info.g}</td>
               <td className="info-label">B:</td>
               <td className="info-value">{info.b}</td>
+              <td className="info-label">A:</td>
+              <td className="info-value">{info.alpha}</td>
             </tr>
             <tr>
               <td className="info-label">L:</td>

@@ -74,8 +74,8 @@ export function encodeImageDataToGB7(
     // Y = 0.299R + 0.587G + 0.114B
     const grayValue = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
 
-    // Ограничение 7 битами (0-127)
-    const gray7bit = Math.min(127, Math.max(0, grayValue));
+    // Сжатие 8-бит (0-255) в 7-бит (0-127)
+    const gray7bit = Math.round(grayValue * 127 / 255);
 
     let byte = gray7bit;
 

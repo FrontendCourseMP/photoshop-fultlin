@@ -88,8 +88,8 @@ export function gb7ToImageData(gb7Image: GB7Image): ImageDataRGBA {
   for (let i = 0; i < pixels.length; i++) {
     const byte = pixels[i];
     
-    // Извлечение 7-битного значения оттенка серого (биты 0-6)
-    const grayValue = byte & 0x7F;
+    // Извлечение 7-битного значения оттенка серого (биты 0-6) и растяжение до 8-бит
+    const grayValue = Math.round((byte & 0x7F) * 255 / 127);
     
     // Извлечение бита маски (бит 7)
     const maskBit = (byte >> 7) & 1;
