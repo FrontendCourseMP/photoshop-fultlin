@@ -41,7 +41,7 @@ export function TopBar({
             <select
               className="interpolation-select"
               value={interpolationMethod}
-              onChange={e => onInterpolationMethodChange(e.target.value)}
+              onChange={e => onInterpolationMethodChange(e.target.value as import('../core/interpolation').InterpolationMethod)}
               title="Метод фильтрации при масштабировании"
             >
               {INTERPOLATION_DESCRIPTIONS.map(d => (

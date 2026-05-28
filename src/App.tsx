@@ -86,11 +86,6 @@ function App() {
     setEyedropperPos({ x: e.clientX, y: e.clientY });
   }, [getProcessedSourceImageData, displayScale, eyedropperInfo]);
 
-  const closeEyedropper = useCallback(() => {
-    setEyedropperInfo(null);
-    setEyedropperActive(false);
-  }, []);
-
   const closeEyedropperPopup = useCallback(() => {
     setEyedropperInfo(null);
   }, []);
