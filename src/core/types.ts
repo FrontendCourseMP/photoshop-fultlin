@@ -1,3 +1,5 @@
+import type { InterpolationMethod } from './interpolation';
+
 export interface GB7Header {
   signature: Uint8Array; // 4 bytes: 0x47, 0x42, 0x37, 0x1D
   version: number;        // 1 byte: 0x01
@@ -96,6 +98,6 @@ export interface TopBarProps {
   onToggleMenu: () => void;
   displayScale: number;
   onDisplayScaleChange: (scale: number) => void;
-  interpolationMethod: string;
-  onInterpolationMethodChange: (method: string) => void;
+  interpolationMethod: InterpolationMethod;
+  onInterpolationMethodChange: (method: InterpolationMethod) => void;
 }
